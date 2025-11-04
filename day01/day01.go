@@ -16,7 +16,7 @@ func check(e error) {
 func readInput() ([]int, []int) {
 	//reads in the data
 	// Choose filename: first command-line arg overrides default
-	filename := "data/day1_ex.txt"
+	filename := "day01.txt"
 	if len(os.Args) > 1 {
 		filename = os.Args[1]
 	}

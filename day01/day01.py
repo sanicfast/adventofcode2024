@@ -1,4 +1,4 @@
-filename = 'data/day1.txt'
+filename = 'day1.txt'
 # filename = 'data/day1_ex.txt'
 with open(filename) as f:
     rawdata = f.read().splitlines()
