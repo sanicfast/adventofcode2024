@@ -26,7 +26,7 @@ func check(e error) {
 }
 
 func readInput() string {
-	filename := "day03_ex.txt"
+	filename := "day03.txt"
 	if len(os.Args) > 1 {
 		filename = os.Args[1]
 	}
@@ -39,7 +39,7 @@ func readInput() string {
 	return inputString
 }
 
-func parse(input string, part int) {
+func parse(input string, part int) int {
 	i := 0
 	var numChar1, numChar2 []byte
 	var numArgs int
@@ -110,12 +110,14 @@ func parse(input string, part int) {
 		}
 		i += 1
 	}
-	fmt.Println(outSum)
+	return outSum
 }
 
 func main() {
 	input := readInput()
 	// fmt.Println(input)
-	parse(input, 1)
-	parse(input, 2)
+	part1 := parse(input, 1)
+	fmt.Println("Part 1:", part1)
+	part2 := parse(input, 2)
+	fmt.Println("Part 2:", part2)
 }
