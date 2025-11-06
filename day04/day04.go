@@ -11,7 +11,6 @@ func check(e error) {
 		panic(e)
 	}
 }
-
 func readInput() []string {
 	filename := "day04_ex.txt"
 	if len(os.Args) > 1 {
@@ -24,11 +23,17 @@ func readInput() []string {
 	inputString := string(rawData)
 	lines := strings.Split(inputString, "\n")
 
-	return lines
+	// make sure we don't have an empty line at the end
+	var filteredLines []string
+	for _, line := range lines {
+		if strings.TrimSpace(line) != "" {
+			filteredLines = append(filteredLines, line)
+		}
+	}
+	return filteredLines
 }
-
 func checkCoordsDir(crossword []string, row int, col int, dr int, dc int) int {
-
+	// check one direction of a certain coord
 	for _, letter := range "XMAS" {
 		if row >= len(crossword) || row < 0 {
 			return 0
@@ -45,8 +50,8 @@ func checkCoordsDir(crossword []string, row int, col int, dr int, dc int) int {
 	}
 	return 1
 }
-
 func coordCheckDirections(crossword []string, row int, col int) int {
+	// check one coord
 	sum := 0
 	for i := -1; i <= 1; i++ {
 		for j := -1; j <= 1; j++ {
@@ -57,7 +62,8 @@ func coordCheckDirections(crossword []string, row int, col int) int {
 	}
 	return sum
 }
-func countXMAXes(crossword []string) int {
+func countXMASes(crossword []string) int {
+	// check the whole crossword
 	sum := 0
 	for row := range crossword {
 		for col := range crossword[row] {
@@ -66,12 +72,56 @@ func countXMAXes(crossword []string) int {
 	}
 	return sum
 }
+func countMASXes(crossword []string) int {
+	sum := 0
+	for row := range crossword {
+		for col := range crossword[row] {
+			sum += coordCheckMASX(crossword, row, col)
+		}
+	}
+	return sum
+}
+
+func coordCheckMASX(crossword []string, row int, col int) int {
+	// check if there's a MASX for a certain coord
+	if crossword[row][col] != byte('A') {
+		return 0
+	}
+	if row <= 0 || row >= len(crossword)-1 {
+		return 0
+	}
+	if col <= 0 || col >= len(crossword[row])-1 {
+		return 0
+	}
+	topLeft := crossword[row-1][col-1]
+	topRight := crossword[row-1][col+1]
+	botLeft := crossword[row+1][col-1]
+	botRight := crossword[row+1][col+1]
+
+	MASCount := 0
+	if (topLeft == byte('M') && botRight == byte('S')) ||
+		(topLeft == byte('S') && botRight == byte('M')) {
+		MASCount += 1
+	}
+	if (botLeft == byte('M') && topRight == byte('S')) ||
+		(botLeft == byte('S') && topRight == byte('M')) {
+		MASCount += 1
+	}
+	if MASCount == 2 {
+		return 1
+	} else {
+		return 0
+	}
+}
 
 func main() {
 	crossword := readInput()
-	// for _, line := range crossword {
-	// 	fmt.Println(line)
-	// }
-	part1 := countXMAXes(crossword)
-	fmt.Println("Part 1", part1)
+	for _, line := range crossword {
+		fmt.Println(len(line))
+	}
+	part1 := countXMASes(crossword)
+	fmt.Println("Part 1:", part1)
+
+	part2 := countMASXes(crossword)
+	fmt.Println("Part 2:", part2)
 }
