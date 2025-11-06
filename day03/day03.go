@@ -117,7 +117,7 @@ func main() {
 	input := readInput()
 	// fmt.Println(input)
 	part1 := parse(input, 1)
-	fmt.Println("Part 1:", part1)
+	fmt.Println("Day 3, Part 1:", part1)
 	part2 := parse(input, 2)
-	fmt.Println("Part 2:", part2)
+	fmt.Println("Day 3, Part 2:", part2)
 }

@@ -83,8 +83,8 @@ func main() {
 	sort.Ints(intSlice1)
 	sort.Ints(intSlice2)
 	part1 := comparify(intSlice1, intSlice2)
-	fmt.Println("Part 1:", part1)
+	fmt.Println("Day 1, Part 1:", part1)
 	uniqueDict := countUnique(intSlice2)
 	part2 := getTotalSimilarity(intSlice1, uniqueDict)
-	fmt.Println("Part 2:", part2)
+	fmt.Println("Day 1, Part 2:", part2)
 }

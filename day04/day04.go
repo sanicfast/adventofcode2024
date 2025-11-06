@@ -12,7 +12,7 @@ func check(e error) {
 	}
 }
 func readInput() []string {
-	filename := "day04_ex.txt"
+	filename := "day04.txt"
 	if len(os.Args) > 1 {
 		filename = os.Args[1]
 	}
@@ -116,12 +116,10 @@ func coordCheckMASX(crossword []string, row int, col int) int {
 
 func main() {
 	crossword := readInput()
-	for _, line := range crossword {
-		fmt.Println(len(line))
-	}
+
 	part1 := countXMASes(crossword)
-	fmt.Println("Part 1:", part1)
+	fmt.Println("Day 4, Part 1:", part1)
 
 	part2 := countMASXes(crossword)
-	fmt.Println("Part 2:", part2)
+	fmt.Println("Day 4, Part 2:", part2)
 }

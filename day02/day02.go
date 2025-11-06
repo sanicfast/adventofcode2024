@@ -129,9 +129,9 @@ func main() {
 
 	// part 1
 	part1 := part1Diffs(data)
-	fmt.Println("Part 1:", part1)
+	fmt.Println("Day 2, Part 1:", part1)
 
 	// part 2
 	part2 := part2Diffs(data)
-	fmt.Println("Part 2:", part2)
+	fmt.Println("Day 2, Part 2:", part2)
 }
