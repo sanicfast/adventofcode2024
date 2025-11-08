@@ -8,7 +8,6 @@ import (
 )
 
 type Coord struct {
-	// Fields representing the X and Y dimensions
 	row int
 	col int
 }
@@ -81,7 +80,6 @@ func timeTick(guard *Guard, obstacles []Coord, dim Coord) int {
 	// see if we bumped into an obstacle. if so, turn right and exit.
 	for _, o := range obstacles {
 		if o.row == newRow && o.col == newCol {
-			// fmt.Println("bump!", o)
 			guard.turnRight()
 			return 0
 		}
@@ -104,7 +102,6 @@ func countGuardLocations(guard Guard, obstacles []Coord, dim Coord) int {
 		}
 
 		finished = timeTick(&guard, obstacles, dim)
-		// fmt.Println(guard)
 	}
 	return visitedLocationCount
 }
@@ -137,11 +134,17 @@ func detectLoop(guard Guard, obstacles []Coord, dim Coord,
 	return 0
 }
 func countLoopsBruteForce(guard Guard, obstacles []Coord, dim Coord) int {
+	initialGuardCoord := guard.location
 	sum := 0
 	for i := range dim.row {
 		for j := range dim.col {
+			obstacleLocation := Coord{i, j}
+			if obstacleLocation == initialGuardCoord {
+				continue
+			}
 			seenGuardStates := make(map[Guard]struct{})
-			sum += detectLoop(guard, obstacles, dim, Coord{i, j}, seenGuardStates)
+			loopDetected := detectLoop(guard, obstacles, dim, Coord{i, j}, seenGuardStates)
+			sum += loopDetected
 		}
 	}
 	return sum
@@ -150,8 +153,8 @@ func countLoopsBruteForce(guard Guard, obstacles []Coord, dim Coord) int {
 func copyGuardMap(original map[Guard]struct{}) map[Guard]struct{} {
 	newMap := make(map[Guard]struct{}, len(original))
 
-	for key, _ := range original {
-		newMap[key] = struct{}{}
+	for key, val := range original {
+		newMap[key] = val
 	}
 	return newMap
 }
@@ -165,22 +168,30 @@ func countLoopsSmarter(guard Guard, obstacles []Coord, dim Coord) int {
 
 	// while haven't finished
 	for finished == 0 {
-		// check if we've been here
-		_, visited := visitedLocations[guard.location]
-		// if not and it's not the initial location
-		if !visited && guard.location != initialGuardCoord {
-			// add it to our list of places we've been
-			visitedLocations[guard.location] = struct{}{}
-			guardClone := copyGuardMap(seenGuardStates)
-			sum += detectLoop(guard, obstacles, dim,
-				Coord{guard.location.row, guard.location.col}, guardClone,
+		// drop an obstacle in front of the guard and see if it created a loop
+		newObstacle := Coord{
+			guard.location.row + guard.heading.row,
+			guard.location.col + guard.heading.col}
+
+		_, alreadyTried := visitedLocations[newObstacle]
+
+		if !alreadyTried && newObstacle != initialGuardCoord {
+			guardMapClone := copyGuardMap(seenGuardStates)
+
+			loopDetected := detectLoop(guard, obstacles, dim,
+				newObstacle, guardMapClone,
 			)
+			sum += loopDetected
 		}
+		// add it to our list of places we've been
+		visitedLocations[guard.location] = struct{}{}
 		// add this guard state to our dictionary
 		seenGuardStates[guard] = struct{}{}
 		// check if we've finished and if not move forward a tick
 		finished = timeTick(&guard, obstacles, dim)
 	}
+	// fmt.Println(len(visitedLocations))
+	// fmt.Println(visitedLocations)
 	return sum
 }
 
@@ -190,10 +201,12 @@ func main() {
 
 	part1 := countGuardLocations(guard, obstacles, dim)
 	fmt.Println("Day 6, Part 1:", part1)
-	part2 := countLoopsBruteForce(guard, obstacles, dim) // 2m15s for brute force!
-	fmt.Println("Day 6, Part 2:", part2)
+
+	// part2 := countLoopsBruteForce(guard, obstacles, dim) // 2m15s for brute force!
+	// fmt.Println("Day 6, Part 2:", part2)
+
 	part2_2 := countLoopsSmarter(guard, obstacles, dim)
-	fmt.Println("Day 6, Part 2:", part2_2) // not right yet...
+	fmt.Println("Day 6, Part 2:", part2_2)
 
 	fmt.Println(time.Since(startTime))
 
