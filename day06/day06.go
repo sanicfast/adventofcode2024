@@ -21,7 +21,7 @@ func check(e error) {
 		panic(e)
 	}
 }
-func readInput() (Guard, map[Coord]struct{}, Coord) {
+func readInput() (Guard, [][]rune, Coord) {
 	filename := "day06.txt"
 	if len(os.Args) > 1 {
 		filename = os.Args[1]
@@ -33,10 +33,13 @@ func readInput() (Guard, map[Coord]struct{}, Coord) {
 	inputString := string(rawData)
 
 	lines := strings.Split(inputString, "\n")
+	dim := Coord{len(lines), len(lines[0])}
 	obstacles := make(map[Coord]struct{})
+	room := make([][]rune, len(lines))
 	var guard Guard
 	for row, line := range lines {
 		for col, char := range line {
+			room[row] = append(room[row], char)
 			switch char {
 			case '#':
 				obstacles[Coord{row, col}] = struct{}{}
@@ -48,8 +51,7 @@ func readInput() (Guard, map[Coord]struct{}, Coord) {
 			}
 		}
 	}
-	dim := Coord{len(lines), len(lines[0])}
-	return guard, obstacles, dim
+	return guard, room, dim
 }
 func (g *Guard) turnRight() {
 	oldHeading := g.heading
@@ -67,7 +69,7 @@ func (g *Guard) turnRight() {
 	g.heading = newHeading
 }
 
-func timeTick(guard *Guard, obstacles map[Coord]struct{}, dim Coord) int {
+func timeTick(guard *Guard, obstacles [][]rune, dim Coord) int {
 	newRow := guard.heading.row + guard.location.row
 	newCol := guard.heading.col + guard.location.col
 
@@ -77,14 +79,9 @@ func timeTick(guard *Guard, obstacles map[Coord]struct{}, dim Coord) int {
 	} else if newCol < 0 || newCol >= dim.row {
 		return 1
 	}
-	// see if we bumped into an obstacle. if so, turn right and exit.
-	// for _, o := range obstacles {
-	// 	if o.row == newRow && o.col == newCol {
-	// 		guard.turnRight()
-	// 		return 0
-	// 	}
-	_, bump := obstacles[Coord{newRow, newCol}]
-	if bump {
+
+	o := obstacles[newRow][newCol]
+	if o == '#' {
 		guard.turnRight()
 		return 0
 	}
@@ -95,7 +92,7 @@ func timeTick(guard *Guard, obstacles map[Coord]struct{}, dim Coord) int {
 	return 0
 }
 
-func countGuardLocations(guard Guard, obstacles map[Coord]struct{}, dim Coord) int {
+func countGuardLocations(guard Guard, obstacles [][]rune, dim Coord) int {
 	visitedLocations := make(map[Coord]struct{})
 	visitedLocationCount := 0
 	finished := 0
@@ -111,7 +108,7 @@ func countGuardLocations(guard Guard, obstacles map[Coord]struct{}, dim Coord) i
 	return visitedLocationCount
 }
 
-func detectLoop(guard Guard, obstacles map[Coord]struct{}, dim Coord,
+func detectLoop(guard Guard, obstacles [][]rune, dim Coord,
 	seenGuardStates map[Guard]struct{}) int {
 	// if guard.location == newObstacle {
 	// 	return 0
@@ -137,7 +134,7 @@ func detectLoop(guard Guard, obstacles map[Coord]struct{}, dim Coord,
 	}
 	return 0
 }
-func countLoopsBruteForce(guard Guard, obstacles map[Coord]struct{}, dim Coord) int {
+func countLoopsBruteForce(guard Guard, obstacles [][]rune, dim Coord) int {
 	initialGuardCoord := guard.location
 	sum := 0
 	for i := range dim.row {
@@ -147,13 +144,13 @@ func countLoopsBruteForce(guard Guard, obstacles map[Coord]struct{}, dim Coord) 
 				continue
 			}
 			seenGuardStates := make(map[Guard]struct{})
-			_, bump := obstacles[Coord{i, j}]
-			if !bump {
-				obstacles[Coord{i, j}] = struct{}{}
+			o := obstacles[i][j]
+			if o != '#' {
+				obstacles[i][j] = '#'
 
 				loopDetected := detectLoop(guard, obstacles, dim, seenGuardStates)
 				sum += loopDetected
-				delete(obstacles, Coord{i, j})
+				obstacles[i][j] = '.'
 			}
 		}
 	}
@@ -177,7 +174,7 @@ func copyCoordMap(original map[Coord]struct{}) map[Coord]struct{} {
 	return newMap
 }
 
-func countLoopsSmarter(guard Guard, obstacles map[Coord]struct{}, dim Coord) int {
+func countLoopsSmarter(guard Guard, obstacles [][]rune, dim Coord) int {
 	initialGuardCoord := guard.location
 	sum := 0
 	finished := 0
@@ -192,16 +189,23 @@ func countLoopsSmarter(guard Guard, obstacles map[Coord]struct{}, dim Coord) int
 			guard.location.col + guard.heading.col}
 
 		_, alreadyTried := visitedLocations[newObstacle]
-		_, bump := obstacles[newObstacle]
 
-		if !alreadyTried && newObstacle != initialGuardCoord && !bump {
+		if newObstacle.row < 0 || newObstacle.row >= dim.row {
+			break
+		} else if newObstacle.col < 0 || newObstacle.col >= dim.row {
+			break
+		}
+
+		o := obstacles[newObstacle.row][newObstacle.col]
+
+		if !alreadyTried && newObstacle != initialGuardCoord && o != '#' {
 			guardMapClone := copyGuardMap(seenGuardStates)
-			obstacles[newObstacle] = struct{}{}
+			obstacles[newObstacle.row][newObstacle.col] = '#'
 			loopDetected := detectLoop(guard, obstacles, dim,
 				guardMapClone,
 			)
 			sum += loopDetected
-			delete(obstacles, newObstacle)
+			obstacles[newObstacle.row][newObstacle.col] = '.'
 
 		}
 		// add it to our list of places we've been
