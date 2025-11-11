@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func check(e error) {
@@ -15,7 +16,7 @@ func check(e error) {
 }
 
 func readInput() [][]int {
-	filename := "day02.txt"
+	filename := "input.txt"
 	if len(os.Args) > 1 {
 		filename = os.Args[1]
 	}
@@ -124,6 +125,8 @@ func part2Diffs(data [][]int) int {
 }
 
 func main() {
+	startTime := time.Now()
+
 	// read in data
 	data := readInput()
 
@@ -134,4 +137,5 @@ func main() {
 	// part 2
 	part2 := part2Diffs(data)
 	fmt.Println("Day 2, Part 2:", part2)
+	fmt.Println(time.Since(startTime))
 }

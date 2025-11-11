@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 func check(e error) {
@@ -12,7 +13,7 @@ func check(e error) {
 	}
 }
 func readInput() []string {
-	filename := "day04.txt"
+	filename := "input.txt"
 	if len(os.Args) > 1 {
 		filename = os.Args[1]
 	}
@@ -115,6 +116,8 @@ func coordCheckMASX(crossword []string, row int, col int) int {
 }
 
 func main() {
+	startTime := time.Now()
+
 	crossword := readInput()
 
 	part1 := countXMASes(crossword)
@@ -122,4 +125,5 @@ func main() {
 
 	part2 := countMASXes(crossword)
 	fmt.Println("Day 4, Part 2:", part2)
+	fmt.Println(time.Since(startTime))
 }

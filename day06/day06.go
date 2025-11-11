@@ -22,7 +22,7 @@ func check(e error) {
 	}
 }
 func readInput() (Guard, [][]rune, Coord) {
-	filename := "day06.txt"
+	filename := "input.txt"
 	if len(os.Args) > 1 {
 		filename = os.Args[1]
 	}

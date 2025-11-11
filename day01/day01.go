@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func check(e error) {
@@ -16,7 +17,7 @@ func check(e error) {
 func readInput() ([]int, []int) {
 	//reads in the data
 	// Choose filename: first command-line arg overrides default
-	filename := "day01.txt"
+	filename := "input.txt"
 	if len(os.Args) > 1 {
 		filename = os.Args[1]
 	}
@@ -79,6 +80,8 @@ func getTotalSimilarity(myArray []int, myMap map[int]int) int {
 }
 
 func main() {
+	startTime := time.Now()
+
 	intSlice1, intSlice2 := readInput()
 	sort.Ints(intSlice1)
 	sort.Ints(intSlice2)
@@ -87,4 +90,5 @@ func main() {
 	uniqueDict := countUnique(intSlice2)
 	part2 := getTotalSimilarity(intSlice1, uniqueDict)
 	fmt.Println("Day 1, Part 2:", part2)
+	fmt.Println(time.Since(startTime))
 }

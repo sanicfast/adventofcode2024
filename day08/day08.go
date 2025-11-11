@@ -19,7 +19,7 @@ type Coord struct {
 }
 
 func readInput() (map[rune][]Coord, Coord) {
-	filename := "day08.txt"
+	filename := "input.txt"
 	if len(os.Args) > 1 {
 		filename = os.Args[1]
 	}

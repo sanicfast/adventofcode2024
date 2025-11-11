@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 )
 
 var intCharSet = map[byte]struct{}{
@@ -26,7 +27,7 @@ func check(e error) {
 }
 
 func readInput() string {
-	filename := "day03.txt"
+	filename := "input.txt"
 	if len(os.Args) > 1 {
 		filename = os.Args[1]
 	}
@@ -114,10 +115,13 @@ func parse(input string, part int) int {
 }
 
 func main() {
+	startTime := time.Now()
+
 	input := readInput()
 	// fmt.Println(input)
 	part1 := parse(input, 1)
 	fmt.Println("Day 3, Part 1:", part1)
 	part2 := parse(input, 2)
 	fmt.Println("Day 3, Part 2:", part2)
+	fmt.Println(time.Since(startTime))
 }

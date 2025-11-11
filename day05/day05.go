@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func check(e error) {
@@ -16,7 +17,7 @@ func readInput() (map[int][]int, [][]int) {
 	// read in the input file and returns a rule dict
 	// with keys as the gt num and vals of the lt nums and
 	// a list of the updates to be checked.
-	filename := "day05.txt"
+	filename := "input.txt"
 	if len(os.Args) > 1 {
 		filename = os.Args[1]
 	}
@@ -138,10 +139,13 @@ func sumMiddleNumsOfInorrectlyOrderedUpdates(ruleMap map[int][]int, updates [][]
 }
 
 func main() {
+	startTime := time.Now()
+
 	ruleMap, updates := readInput()
 	part1 := sumMiddleNumsOfCorrectlyOrderedUpdates(ruleMap, updates)
 	fmt.Println("Day 5, Part 1:", part1)
 	part2 := sumMiddleNumsOfInorrectlyOrderedUpdates(ruleMap, updates)
 	fmt.Println("Day 5, Part 2:", part2)
+	fmt.Println(time.Since(startTime))
 
 }
