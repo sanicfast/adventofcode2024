@@ -17,7 +17,7 @@ func check(e error) {
 }
 
 func readInput() ([]int, [][]int) {
-	filename := "day07_ex.txt"
+	filename := "day07.txt"
 	if len(os.Args) > 1 {
 		filename = os.Args[1]
 	}
